@@ -1,7 +1,7 @@
 // node_modules
 import React from "react";
 import { Route, Switch, BrowserRouter } from "react-router-dom";
-import Web3Provider from "web3-react";
+import { Web3ReactProvider } from "@web3-react/core";
 
 // pages
 import { HomePage, StakingPage, ClaimingPage } from "./pages";
@@ -10,7 +10,7 @@ import { HomePage, StakingPage, ClaimingPage } from "./pages";
 import LayoutComponent from "./components/Layout";
 
 // utils
-import connectors from "./utils/connectors";
+import { getLibrary } from "./utils/getLibrary";
 
 // consts
 import { PATH } from "./consts";
@@ -20,7 +20,7 @@ import "./styles/global.css";
 
 const App: React.FC = () => {
     return (
-        <Web3Provider connectors={connectors}>
+        <Web3ReactProvider getLibrary={getLibrary}>
             <BrowserRouter>
                 <LayoutComponent>
                     <Switch>
@@ -36,7 +36,7 @@ const App: React.FC = () => {
                     </Switch>
                 </LayoutComponent>
             </BrowserRouter>
-        </Web3Provider>
+        </Web3ReactProvider>
     );
 };
 
