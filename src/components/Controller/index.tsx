@@ -24,24 +24,12 @@ const ControllerComponent: React.FC = () => {
                             ? "lightgray"
                             : "white"
                     }
-                    borderRadius={"15px"}
+                    borderRadius={"none"}
                     width={"150px"}
                     height={"40px"}
-                    marginRight={"-15px"}
-                    zIndex={location.pathname === PATH.STAKING ? 5 : 3}
                     position={"relative"}
-                    borderTopRightRadius={
-                        location.pathname === PATH.STAKING ||
-                        location.pathname === PATH.HOME
-                            ? "0px"
-                            : "15px"
-                    }
-                    borderBottomRightRadius={
-                        location.pathname === PATH.STAKING ||
-                        location.pathname === PATH.HOME
-                            ? "0px"
-                            : "15px"
-                    }
+                    borderTopLeftRadius={"15px"}
+                    borderBottomLeftRadius={"15px"}
                 >
                     Staking
                 </Button>
@@ -53,17 +41,12 @@ const ControllerComponent: React.FC = () => {
                             ? "lightgray"
                             : "white"
                     }
-                    borderRadius={"15px"}
+                    borderRadius={"none"}
                     width={"150px"}
                     height={"40px"}
-                    zIndex={location.pathname === PATH.CLAIMING ? 5 : 3}
                     position={"relative"}
-                    borderTopLeftRadius={
-                        location.pathname === PATH.CLAIMING ? "0px" : "15px"
-                    }
-                    borderBottomLeftRadius={
-                        location.pathname === PATH.CLAIMING ? "0px" : "15px"
-                    }
+                    borderTopRightRadius={"15px"}
+                    borderBottomRightRadius={"15px"}
                 >
                     Claiming
                 </Button>

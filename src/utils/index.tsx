@@ -1,3 +1,4 @@
 import * as walletConnectors from "./walletConnectors";
+import getWeb3 from "./getWeb3";
 
-export { walletConnectors };
+export { getWeb3, walletConnectors };

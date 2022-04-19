@@ -20,7 +20,12 @@ const ValueItemBoxComponent: React.FC<ValueItemProps> = ({ label, text }) => {
                 boxShadow={"2px 4px 15px lightgray"}
                 margin={"20px"}
             >
-                <Heading padding={"2px"} margin={"0px"} fontSize={"24px"}>
+                <Heading
+                    padding={"2px"}
+                    margin={"0px"}
+                    fontSize={"24px"}
+                    textAlign={"center"}
+                >
                     {label}
                 </Heading>
                 <Text padding={"2px"} margin={"0px"} textAlign={"center"}>

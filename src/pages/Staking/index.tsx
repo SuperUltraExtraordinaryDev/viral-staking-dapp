@@ -1,5 +1,5 @@
 // node_modules
-import React from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import {
     Grid,
     InputGroup,
@@ -8,9 +8,113 @@ import {
     InputRightAddon,
     Button,
     Flex,
+    useToast,
 } from "@chakra-ui/react";
 
+// context
+import WalletContext from "../../context/walletContext";
+
+// config
+import { Contracts } from "../../config";
+
 const StakingPage: React.FC = () => {
+    const walletContext = useContext(WalletContext);
+    const toast = useToast();
+
+    const [totalStakedAmount, setTotalStakedAmount] = useState<string>("");
+    const [stakingPoolPercent, setStakingPoolPercent] = useState<string>("");
+    const [totalUnstakedAmount, setTotalUnstakedAmount] = useState<string>("");
+
+    const stakeAmountRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+    const unstakeAmountRef =
+        useRef() as React.MutableRefObject<HTMLInputElement>;
+
+    useEffect(() => {
+        if (walletContext.account && walletContext.stakingContract) {
+            walletContext.stakingContract.methods
+                .GetStakingListOf(walletContext.account)
+                .call()
+                .then((stakingList: any[]) => {
+                    let tempTotalStakedAmount = 0;
+                    let tempTotalUnstakedAmount = 0;
+                    for (let i = 0; i < stakingList.length; i++) {
+                        if (!stakingList[i].unstaked) {
+                            tempTotalStakedAmount += Number(
+                                walletContext.web3Instance.utils.fromWei(
+                                    stakingList[i].amount,
+                                    "ether"
+                                )
+                            );
+                            tempTotalUnstakedAmount += Number(
+                                walletContext.web3Instance.utils.fromWei(
+                                    stakingList[i].availableUnstakedAmount,
+                                    "ether"
+                                )
+                            );
+                        }
+                    }
+                    setTotalStakedAmount(tempTotalStakedAmount.toString());
+                    setTotalUnstakedAmount(tempTotalUnstakedAmount.toString());
+                });
+        }
+    }, [walletContext.account, walletContext.stakingContract]);
+
+    const onStake = () => {
+        if (walletContext.account) {
+            const amount = walletContext.web3Instance.utils.toWei(
+                stakeAmountRef.current.value,
+                "ether"
+            );
+            walletContext.stakingContract.methods
+                .stake(amount)
+                .send({ from: walletContext.account });
+        } else {
+            toast({
+                title: `Wallet not connected`,
+                status: "error",
+                isClosable: true,
+                duration: 3000,
+            });
+        }
+    };
+
+    const onUnstake = () => {
+        if (walletContext.account) {
+            const amount = walletContext.web3Instance.utils.toWei(
+                unstakeAmountRef.current.value,
+                "ether"
+            );
+            walletContext.stakingContract.methods
+                .unstake(amount)
+                .send({ from: walletContext.account });
+        } else {
+            toast({
+                title: `Wallet not connected`,
+                status: "error",
+                isClosable: true,
+                duration: 3000,
+            });
+        }
+    };
+
+    const onApprove = () => {
+        if (walletContext.account) {
+            walletContext.satsTokenContract.methods
+                .approve(
+                    Contracts.stakingContract.address,
+                    stakeAmountRef.current.value
+                )
+                .send({ from: walletContext.account });
+        } else {
+            toast({
+                title: `Wallet not connected`,
+                status: "error",
+                isClosable: true,
+                duration: 3000,
+            });
+        }
+    };
+
     return (
         <Grid
             backgroundColor={"rgb(126, 126, 125)"}
@@ -28,42 +132,83 @@ const StakingPage: React.FC = () => {
             padding={"30px"}
         >
             <InputGroup backgroundColor={"white"} color={"black"}>
-                <InputLeftAddon children="Total Staked Amount" />
-                <Input value={"0"} disabled />
+                <InputLeftAddon
+                    children="Total Staked Amount"
+                    sx={{
+                        "@media only screen and (max-width: 600px)": {
+                            fontSize: "12px",
+                        },
+                    }}
+                />
+                <Input value={totalStakedAmount} disabled />
             </InputGroup>
             <InputGroup backgroundColor={"white"} color={"black"} mt={"20px"}>
-                <InputLeftAddon children="% Staking Pool" />
-                <Input value={"0"} disabled />
+                <InputLeftAddon
+                    children="% Staking Pool"
+                    sx={{
+                        "@media only screen and (max-width: 600px)": {
+                            fontSize: "12px",
+                        },
+                    }}
+                />
+                <Input value={stakingPoolPercent} disabled />
             </InputGroup>
             <InputGroup backgroundColor={"white"} color={"black"} mt={"20px"}>
                 <Input
                     placeholder="Staking Amount of SATs Token"
                     borderRadius={"none"}
                     borderBottom={"3px solid black"}
+                    ref={stakeAmountRef}
                 />
-                <InputRightAddon children="MAX" />
+                <InputRightAddon
+                    onClick={() => {
+                        stakeAmountRef.current.value = totalStakedAmount;
+                    }}
+                    cursor={"pointer"}
+                    children="MAX"
+                />
             </InputGroup>
             <Flex alignItems={"center"} justifyContent={"center"} mt={"20px"}>
-                <Button width={"200px"}>Approve</Button>
+                <Button width={"200px"} onClick={onApprove}>
+                    Approve
+                </Button>
             </Flex>
             <Flex alignItems={"center"} justifyContent={"center"} mt={"20px"}>
-                <Button width={"200px"}>Stake</Button>
+                <Button width={"200px"} onClick={onStake}>
+                    Stake
+                </Button>
             </Flex>
 
             <InputGroup backgroundColor={"white"} color={"black"} mt={"40px"}>
-                <InputLeftAddon children="Total Untaked Amount" />
-                <Input value={"0"} disabled />
+                <InputLeftAddon
+                    children="Total Untaked Amount"
+                    sx={{
+                        "@media only screen and (max-width: 600px)": {
+                            fontSize: "12px",
+                        },
+                    }}
+                />
+                <Input value={totalUnstakedAmount} disabled />
             </InputGroup>
             <InputGroup backgroundColor={"white"} color={"black"} mt={"20px"}>
                 <Input
                     placeholder="Unstaking Amount of SATs Token"
                     borderRadius={"none"}
                     borderBottom={"3px solid black"}
+                    ref={unstakeAmountRef}
                 />
-                <InputRightAddon children="MAX" />
+                <InputRightAddon
+                    onClick={() => {
+                        unstakeAmountRef.current.value = totalUnstakedAmount;
+                    }}
+                    cursor={"pointer"}
+                    children="MAX"
+                />
             </InputGroup>
             <Flex alignItems={"center"} justifyContent={"center"} mt={"20px"}>
-                <Button width={"200px"}>Unstake</Button>
+                <Button width={"200px"} onClick={onUnstake}>
+                    Unstake
+                </Button>
             </Flex>
         </Grid>
     );

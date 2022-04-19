@@ -9,10 +9,13 @@ import Web3Modal from "web3modal";
 import WalletContext from "../../context/walletContext";
 
 // config
-import { providerOptions } from "../../config";
+import { providerOptions, Contracts } from "../../config";
 
 // consts
 import { PATH } from "../../consts";
+
+// utils
+import { getWeb3 } from "../../utils";
 
 // assets
 import Logo from "../../assets/satoshi-head.png";
@@ -21,7 +24,7 @@ import ButtonImage from "../../assets/button.png";
 const HeaderComponent: React.FC = () => {
     const [provider, setProvider] = useState<any>(null);
     const [library, setLibrary] = useState<any>(null);
-    const [account, setAccount] = useState<any>(null);
+    const [account, setAccount] = useState<string>("");
     const [signature, setSignature] = useState("");
     const [error, setError] = useState<any>("");
     const [chainId, setChainId] = useState<any>(null);
@@ -51,13 +54,30 @@ const HeaderComponent: React.FC = () => {
                 walletContext.setAccount(accounts[0]);
             }
             setChainId(network.chainId);
+
+            const web3Instance = await getWeb3();
+            walletContext.setWeb3Instance(web3Instance);
+
+            const stakingContractInstance = new web3Instance.eth.Contract(
+                Contracts.stakingContract.ABI,
+                Contracts.stakingContract.address
+            );
+            walletContext.setStakingContract(stakingContractInstance);
+
+            const satsTokenContractInstance = new web3Instance.eth.Contract(
+                Contracts.satsTokenContract.ABI,
+                Contracts.satsTokenContract.address
+            );
+            walletContext.setSATsTokenContract(satsTokenContractInstance);
         } catch (error) {
+            console.error("error:", error);
             setError(error);
         }
     };
 
     const refreshState = () => {
-        setAccount(null);
+        setAccount("");
+        walletContext.setAccount("");
         setChainId(null);
         setNetwork(null);
         setMessage("");

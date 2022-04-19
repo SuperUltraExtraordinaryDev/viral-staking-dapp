@@ -16,7 +16,16 @@ const HomePage: React.FC = () => {
 
     const walletContext = useContext(WalletContext);
 
-    useEffect(() => {}, [walletContext.account]);
+    useEffect(() => {
+        if (walletContext.account && walletContext.stakingContract) {
+            walletContext.stakingContract.methods
+                .GetStakeTokenBalanceOf(walletContext.account)
+                .call()
+                .then((balance: string) => {
+                    setSATsBalance(balance);
+                });
+        }
+    }, [walletContext.account, walletContext.stakingContract]);
 
     return (
         <>
