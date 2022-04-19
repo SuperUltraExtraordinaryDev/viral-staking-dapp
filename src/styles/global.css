@@ -1,0 +1,7 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    font-family: cursive !important;
+    background-size: cover;
+    background-image: url("../assets/background.jpeg");
+}
