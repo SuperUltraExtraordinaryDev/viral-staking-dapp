@@ -1,17 +1,23 @@
 // node_modules
 import React from "react";
-import { Flex, Grid } from "@chakra-ui/react";
+import { useLocation } from "react-router-dom";
+import { Grid } from "@chakra-ui/react";
 
 // components
 import HeaderComponent from "../Header";
 import ControllerComponent from "../Controller";
 import FooterComponent from "../Footer";
 
+// consts
+import { PATH } from "../../consts";
+
 interface LayoutProps {
     children: React.ReactNode;
 }
 
 const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
+    const location = useLocation();
+
     return (
         <>
             <HeaderComponent></HeaderComponent>
@@ -19,7 +25,9 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
             <Grid alignItems={"center"} w="100%" h={"100%"}>
                 {children}
             </Grid>
-            <FooterComponent></FooterComponent>
+            {location.pathname !== PATH.HOME && (
+                <FooterComponent></FooterComponent>
+            )}
         </>
     );
 };

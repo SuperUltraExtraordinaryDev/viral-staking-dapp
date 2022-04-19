@@ -38,14 +38,14 @@ export function useInactiveListener(suppress: boolean = false) {
         if (ethereum && ethereum.on && !active && !error && !suppress) {
             const handleConnect = () => {
                 console.log("Handling 'connect' event");
-                activate(injected);
+                activate(Injected);
             };
             const handleChainChanged = (chainId: string | number) => {
                 console.log(
                     "Handling 'chainChanged' event with payload",
                     chainId
                 );
-                activate(injected);
+                activate(Injected);
             };
             const handleAccountsChanged = (accounts: string[]) => {
                 console.log(
@@ -53,7 +53,7 @@ export function useInactiveListener(suppress: boolean = false) {
                     accounts
                 );
                 if (accounts.length > 0) {
-                    activate(injected);
+                    activate(Injected);
                 }
             };
             const handleNetworkChanged = (networkId: string | number) => {
@@ -61,7 +61,7 @@ export function useInactiveListener(suppress: boolean = false) {
                     "Handling 'networkChanged' event with payload",
                     networkId
                 );
-                activate(injected);
+                activate(Injected);
             };
 
             ethereum.on("connect", handleConnect);

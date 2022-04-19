@@ -1,13 +1,9 @@
 // node_modules
 import React from "react";
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Text, Grid } from "@chakra-ui/react";
 
 const StakingPage: React.FC = (props) => {
-    return (
-        <Box fontSize="2xl" textAlign="center">
-            <Text fontSize="6xl">Staking Page</Text>
-        </Box>
-    );
+    return <Grid></Grid>;
 };
 
 export default StakingPage;
