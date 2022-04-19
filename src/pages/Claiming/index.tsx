@@ -22,7 +22,11 @@ const ClaimingPage: React.FC = () => {
         useState<string>("0");
 
     useEffect(() => {
-        if (walletContext.account && walletContext.stakingContract) {
+        if (
+            walletContext.account &&
+            walletContext.web3Instance &&
+            walletContext.stakingContract
+        ) {
             walletContext.stakingContract.methods
                 .GetMaxUnclaimedAmount(walletContext.account)
                 .call()
@@ -48,10 +52,6 @@ const ClaimingPage: React.FC = () => {
                                             "ether"
                                         )
                                     );
-                                    console.log(
-                                        "wbtcStakingRewardAmount:",
-                                        wbtcStakingRewardAmount
-                                    );
                                 }
                             }
                             setStakingRewardAmount(
@@ -60,7 +60,11 @@ const ClaimingPage: React.FC = () => {
                         });
                 });
         }
-    }, [walletContext.account, walletContext.stakingContract]);
+    }, [
+        walletContext.account,
+        walletContext.stakingContract,
+        walletContext.web3Instance,
+    ]);
 
     const onClaim = () => {
         if (walletContext.account) {
@@ -100,29 +104,29 @@ const ClaimingPage: React.FC = () => {
         >
             <InputGroup backgroundColor={"white"} color={"black"}>
                 <InputLeftAddon
-                    children="Staking Rewards Amount"
+                    children="Claimed WBTC Rewards"
                     sx={{
                         "@media only screen and (max-width: 600px)": {
                             fontSize: "12px",
                         },
                     }}
                 />
-                <Input value={stakingRewardAmount} disabled />
+                <Input value={stakingRewardAmount} color={"black"} disabled />
             </InputGroup>
             <InputGroup backgroundColor={"white"} color={"black"} mt={"20px"}>
                 <InputLeftAddon
-                    children="Available Reward Amount"
+                    children="Available WBTC Rewards"
                     sx={{
                         "@media only screen and (max-width: 600px)": {
                             fontSize: "12px",
                         },
                     }}
                 />
-                <Input value={availableRewardAmount} disabled />
+                <Input value={availableRewardAmount} color={"black"} />
             </InputGroup>
             <Flex alignItems={"center"} justifyContent={"center"} mt={"20px"}>
                 <Button width={"200px"} onClick={onClaim}>
-                    Claim
+                    Claim WBTC
                 </Button>
             </Flex>
         </Grid>

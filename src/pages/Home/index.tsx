@@ -10,9 +10,9 @@ import WalletContext from "../../context/walletContext";
 
 const HomePage: React.FC = () => {
     const [SATsBalance, setSATsBalance] = useState<string>("0");
-    const [SATsPrice, setSATsPrice] = useState<string>("0");
-    const [treasuryBalance, setTreasuryBalance] = useState<string>("0");
-    const [burnedTokens, setBurnedTokens] = useState<string>("0");
+    const [SATsPrice] = useState<string>("0");
+    const [treasuryBalance] = useState<string>("0");
+    const [burnedTokens] = useState<string>("0");
 
     const walletContext = useContext(WalletContext);
 
@@ -30,7 +30,11 @@ const HomePage: React.FC = () => {
                     setSATsBalance(originalValue);
                 });
         }
-    }, [walletContext.account, walletContext.stakingContract]);
+    }, [
+        walletContext.account,
+        walletContext.stakingContract,
+        walletContext.web3Instance,
+    ]);
 
     return (
         <>

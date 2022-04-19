@@ -1,7 +1,13 @@
 // node_modules
-import React, { useState, useEffect, useContext } from "react";
+import React, {
+    useState,
+    useEffect,
+    useContext,
+    useCallback,
+    useMemo,
+} from "react";
 import { Link } from "react-router-dom";
-import { Flex, Button, Image, Stack } from "@chakra-ui/react";
+import { Flex, Button, Image } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 
@@ -23,22 +29,18 @@ import ButtonImage from "../../assets/button.png";
 
 const HeaderComponent: React.FC = () => {
     const [provider, setProvider] = useState<any>(null);
-    const [library, setLibrary] = useState<any>(null);
     const [account, setAccount] = useState<string>("");
-    const [signature, setSignature] = useState("");
-    const [error, setError] = useState<any>("");
-    const [chainId, setChainId] = useState<any>(null);
-    const [network, setNetwork] = useState<any>(null);
-    const [message, setMessage] = useState("");
-    const [signedMessage, setSignedMessage] = useState("");
-    const [verified, setVerified] = useState();
 
     const walletContext = useContext(WalletContext);
 
-    const web3Modal = new Web3Modal({
-        cacheProvider: true, // optional
-        providerOptions, // required
-    });
+    const web3Modal = useMemo(
+        () =>
+            new Web3Modal({
+                cacheProvider: true, // optional
+                providerOptions, // required
+            }),
+        []
+    );
 
     const connectWallet = async () => {
         try {
@@ -46,14 +48,11 @@ const HeaderComponent: React.FC = () => {
             await provider.enable();
             const library = new ethers.providers.Web3Provider(provider);
             const accounts = await library.listAccounts();
-            const network = await library.getNetwork();
             setProvider(provider);
-            setLibrary(library);
             if (accounts) {
                 setAccount(accounts[0]);
                 walletContext.setAccount(accounts[0]);
             }
-            setChainId(network.chainId);
 
             const web3Instance = await getWeb3();
             walletContext.setWeb3Instance(web3Instance);
@@ -71,30 +70,24 @@ const HeaderComponent: React.FC = () => {
             walletContext.setSATsTokenContract(satsTokenContractInstance);
         } catch (error) {
             console.error("error:", error);
-            setError(error);
         }
     };
 
-    const refreshState = () => {
+    const refreshState = useCallback(() => {
         setAccount("");
         walletContext.setAccount("");
-        setChainId(null);
-        setNetwork(null);
-        setMessage("");
-        setSignature("");
-        setVerified(undefined);
-    };
+    }, [walletContext]);
 
-    const disconnect = async () => {
+    const disconnect = useCallback(async () => {
         await web3Modal.clearCachedProvider();
         refreshState();
-    };
+    }, [web3Modal, refreshState]);
 
     useEffect(() => {
         if (web3Modal.cachedProvider) {
             connectWallet();
         }
-    }, []);
+    });
 
     useEffect(() => {
         if (provider?.on) {
@@ -103,17 +96,11 @@ const HeaderComponent: React.FC = () => {
                 if (accounts) setAccount(accounts[0]);
             };
 
-            const handleChainChanged = (_hexChainId: any) => {
-                setChainId(_hexChainId);
-            };
-
             const handleDisconnect = () => {
-                console.log("disconnect", error);
                 disconnect();
             };
 
             provider.on("accountsChanged", handleAccountsChanged);
-            provider.on("chainChanged", handleChainChanged);
             provider.on("disconnect", handleDisconnect);
 
             return () => {
@@ -122,12 +109,11 @@ const HeaderComponent: React.FC = () => {
                         "accountsChanged",
                         handleAccountsChanged
                     );
-                    provider.removeListener("chainChanged", handleChainChanged);
                     provider.removeListener("disconnect", handleDisconnect);
                 }
             };
         }
-    }, [provider]);
+    }, [provider, disconnect]);
 
     return (
         <Flex

@@ -59,7 +59,11 @@ const StakingPage: React.FC = () => {
                     setTotalUnstakedAmount(tempTotalUnstakedAmount.toString());
                 });
         }
-    }, [walletContext.account, walletContext.stakingContract]);
+    }, [
+        walletContext.account,
+        walletContext.stakingContract,
+        walletContext.web3Instance,
+    ]);
 
     useEffect(() => {
         if (walletContext.account && walletContext.satsTokenContract) {
