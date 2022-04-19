@@ -1,9 +1,12 @@
 // node_modules
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Flex, Button, Image, Stack } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
+
+// context
+import WalletContext from "../../context/walletContext";
 
 // config
 import { providerOptions } from "../../config";
@@ -27,6 +30,8 @@ const HeaderComponent: React.FC = () => {
     const [signedMessage, setSignedMessage] = useState("");
     const [verified, setVerified] = useState();
 
+    const walletContext = useContext(WalletContext);
+
     const web3Modal = new Web3Modal({
         cacheProvider: true, // optional
         providerOptions, // required
@@ -38,11 +43,13 @@ const HeaderComponent: React.FC = () => {
             await provider.enable();
             const library = new ethers.providers.Web3Provider(provider);
             const accounts = await library.listAccounts();
-            console.log("accounts:", accounts);
             const network = await library.getNetwork();
             setProvider(provider);
             setLibrary(library);
-            if (accounts) setAccount(accounts[0]);
+            if (accounts) {
+                setAccount(accounts[0]);
+                walletContext.setAccount(accounts[0]);
+            }
             setChainId(network.chainId);
         } catch (error) {
             setError(error);
@@ -148,7 +155,7 @@ const HeaderComponent: React.FC = () => {
                     }
                 }}
             >
-                {!account ? "Connect Wallet" : "Disconnect"}
+                {!account ? "Connect Wallet" : account}
             </Button>
         </Flex>
     );

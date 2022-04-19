@@ -15,12 +15,12 @@ const ValueItemBoxComponent: React.FC<ValueItemProps> = ({ label, text }) => {
                 alignItems={"center"}
                 justifyContent={"center"}
                 backgroundColor={"white"}
-                width={"250px"}
-                height={"100px"}
+                width={"350px"}
+                height={"160px"}
                 boxShadow={"2px 4px 15px lightgray"}
                 margin={"20px"}
             >
-                <Heading padding={"2px"} margin={"0px"}>
+                <Heading padding={"2px"} margin={"0px"} fontSize={"24px"}>
                     {label}
                 </Heading>
                 <Text padding={"2px"} margin={"0px"} textAlign={"center"}>

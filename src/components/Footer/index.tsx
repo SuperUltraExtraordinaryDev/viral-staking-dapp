@@ -13,6 +13,7 @@ const FooterComponent: React.FC = () => {
             alignItems={"center"}
             justifyContent={"center"}
             position={"relative"}
+            mt={"20px"}
             mb={"20px"}
         >
             <Link to={PATH.HOME}>

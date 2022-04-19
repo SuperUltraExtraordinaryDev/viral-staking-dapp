@@ -22,7 +22,12 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
         <>
             <HeaderComponent></HeaderComponent>
             <ControllerComponent></ControllerComponent>
-            <Grid alignItems={"center"} w="100%" h={"100%"}>
+            <Grid
+                alignItems={"center"}
+                justifyContent={"center"}
+                w="100%"
+                h={"100%"}
+            >
                 {children}
             </Grid>
             {location.pathname !== PATH.HOME && (

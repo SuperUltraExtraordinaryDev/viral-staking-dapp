@@ -25,9 +25,9 @@ const ControllerComponent: React.FC = () => {
                             : "white"
                     }
                     borderRadius={"15px"}
-                    width={"100px"}
+                    width={"150px"}
                     height={"40px"}
-                    marginRight={"-20px"}
+                    marginRight={"-15px"}
                     zIndex={location.pathname === PATH.STAKING ? 5 : 3}
                     position={"relative"}
                     borderTopRightRadius={
@@ -54,7 +54,7 @@ const ControllerComponent: React.FC = () => {
                             : "white"
                     }
                     borderRadius={"15px"}
-                    width={"100px"}
+                    width={"150px"}
                     height={"40px"}
                     zIndex={location.pathname === PATH.CLAIMING ? 5 : 3}
                     position={"relative"}
