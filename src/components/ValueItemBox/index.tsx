@@ -23,12 +23,17 @@ const ValueItemBoxComponent: React.FC<ValueItemProps> = ({ label, text }) => {
                 <Heading
                     padding={"2px"}
                     margin={"0px"}
-                    fontSize={"24px"}
+                    fontSize={"28px"}
                     textAlign={"center"}
                 >
                     {label}
                 </Heading>
-                <Text padding={"2px"} margin={"0px"} textAlign={"center"}>
+                <Text
+                    padding={"2px"}
+                    margin={"0px"}
+                    textAlign={"center"}
+                    fontSize={"20px"}
+                >
                     {text}
                 </Text>
             </Grid>

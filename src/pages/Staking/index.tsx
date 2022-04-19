@@ -21,6 +21,7 @@ const StakingPage: React.FC = () => {
     const walletContext = useContext(WalletContext);
     const toast = useToast();
 
+    const [allowance, setAllowance] = useState<string>("0");
     const [totalStakedAmount, setTotalStakedAmount] = useState<string>("");
     const [stakingPoolPercent, setStakingPoolPercent] = useState<string>("");
     const [totalUnstakedAmount, setTotalUnstakedAmount] = useState<string>("");
@@ -53,11 +54,27 @@ const StakingPage: React.FC = () => {
                             );
                         }
                     }
+                    setStakingPoolPercent("0");
                     setTotalStakedAmount(tempTotalStakedAmount.toString());
                     setTotalUnstakedAmount(tempTotalUnstakedAmount.toString());
                 });
         }
     }, [walletContext.account, walletContext.stakingContract]);
+
+    useEffect(() => {
+        if (walletContext.account && walletContext.satsTokenContract) {
+            walletContext.satsTokenContract.methods
+                .allowance(
+                    walletContext.account,
+                    Contracts.stakingContract.address
+                )
+                .call()
+                .then((satsAllowance: string) => {
+                    console.log(satsAllowance);
+                    setAllowance(satsAllowance);
+                });
+        }
+    }, [walletContext.account, walletContext.satsTokenContract]);
 
     const onStake = () => {
         if (walletContext.account) {
@@ -174,7 +191,11 @@ const StakingPage: React.FC = () => {
                 </Button>
             </Flex>
             <Flex alignItems={"center"} justifyContent={"center"} mt={"20px"}>
-                <Button width={"200px"} onClick={onStake}>
+                <Button
+                    width={"200px"}
+                    onClick={onStake}
+                    disabled={allowance === "0"}
+                >
                     Stake
                 </Button>
             </Flex>

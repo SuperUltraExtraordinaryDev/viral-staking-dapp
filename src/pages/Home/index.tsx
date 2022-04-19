@@ -22,7 +22,12 @@ const HomePage: React.FC = () => {
                 .GetStakeTokenBalanceOf(walletContext.account)
                 .call()
                 .then((balance: string) => {
-                    setSATsBalance(balance);
+                    const originalValue: any =
+                        walletContext.web3Instance.utils.fromWei(
+                            balance,
+                            "ether"
+                        );
+                    setSATsBalance(originalValue);
                 });
         }
     }, [walletContext.account, walletContext.stakingContract]);

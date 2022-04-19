@@ -112,7 +112,9 @@
             "type": "function"
         },
         {
-            "inputs": [],
+            "inputs": [
+                { "internalType": "address", "name": "user", "type": "address" }
+            ],
             "name": "GetMaxUnclaimedAmount",
             "outputs": [
                 {
@@ -125,7 +127,9 @@
             "type": "function"
         },
         {
-            "inputs": [],
+            "inputs": [
+                { "internalType": "address", "name": "user", "type": "address" }
+            ],
             "name": "GetMaxUnstakeAmount",
             "outputs": [
                 {

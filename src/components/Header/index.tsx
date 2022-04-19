@@ -142,8 +142,8 @@ const HeaderComponent: React.FC = () => {
                     display={"flex"}
                     alignItems={"center"}
                     justifyContent={"center"}
-                    width={"120px"}
-                    height={"50px"}
+                    width={"150px"}
+                    height={"60px"}
                     overflow={"hidden"}
                     backgroundImage={ButtonImage}
                     fontSize={"14px"}
@@ -159,8 +159,8 @@ const HeaderComponent: React.FC = () => {
                 display={"flex"}
                 alignItems={"center"}
                 justifyContent={"center"}
-                width={"120px"}
-                height={"50px"}
+                width={"150px"}
+                height={"60px"}
                 overflow={"hidden"}
                 backgroundImage={ButtonImage}
                 fontSize={"14px"}
