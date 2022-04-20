@@ -1,12 +1,12 @@
 // node_modules
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import {
     Grid,
     InputGroup,
-    Input,
     InputLeftAddon,
     Button,
     Flex,
+    Text,
     useToast,
 } from "@chakra-ui/react";
 
@@ -21,47 +21,56 @@ const ClaimingPage: React.FC = () => {
     const [availableRewardAmount, setAvailableRewardAmount] =
         useState<string>("0");
 
-    useEffect(() => {
+    const getData = useCallback(async () => {
         if (
             walletContext.account &&
             walletContext.web3Instance &&
             walletContext.stakingContract
         ) {
-            walletContext.stakingContract.methods
-                .GetMaxUnclaimedAmount(walletContext.account)
-                .call()
-                .then((wbtcAvailableRewardAmount: string) => {
-                    const tempAvailableRewardAmount =
-                        walletContext.web3Instance.utils.fromWei(
-                            wbtcAvailableRewardAmount,
-                            "ether"
-                        );
-                    setAvailableRewardAmount(tempAvailableRewardAmount);
-                });
+            walletContext.setLoading();
+            const wbtcAvailableRewardAmount =
+                await walletContext.stakingContract.methods
+                    .GetMaxUnclaimedAmount(walletContext.account)
+                    .call();
+            walletContext.finishLoading();
 
-            walletContext.stakingContract.methods
+            const tempAvailableRewardAmount =
+                walletContext.web3Instance.utils.fromWei(
+                    wbtcAvailableRewardAmount,
+                    "ether"
+                );
+
+            setAvailableRewardAmount(tempAvailableRewardAmount);
+
+            walletContext.setLoading();
+            const stakingList = await walletContext.stakingContract.methods
                 .GetStakingListOf(walletContext.account)
-                .call()
-                .then((stakingList: any[]) => {
-                    let wbtcStakingRewardAmount = 0;
-                    for (let i = 0; i < stakingList.length; i++) {
-                        if (!stakingList[i].withdrawn) {
-                            wbtcStakingRewardAmount += Number(
-                                walletContext.web3Instance.utils.fromWei(
-                                    stakingList[i].availableUnclaimedReward,
-                                    "ether"
-                                )
-                            );
-                        }
-                    }
-                    setStakingRewardAmount(wbtcStakingRewardAmount.toString());
-                });
+                .call();
+            walletContext.finishLoading();
+
+            let wbtcStakingRewardAmount = 0;
+            for (let i = 0; i < stakingList.length; i++) {
+                if (!stakingList[i].withdrawn) {
+                    wbtcStakingRewardAmount += Number(
+                        walletContext.web3Instance.utils.fromWei(
+                            stakingList[i].availableUnclaimedReward,
+                            "ether"
+                        )
+                    );
+                }
+            }
+
+            setStakingRewardAmount(wbtcStakingRewardAmount.toString());
         }
     }, [
         walletContext.account,
-        walletContext.stakingContract,
         walletContext.web3Instance,
+        walletContext.stakingContract,
     ]);
+
+    useEffect(() => {
+        getData();
+    }, [getData]);
 
     const onClaim = () => {
         if (walletContext.account) {
@@ -108,7 +117,9 @@ const ClaimingPage: React.FC = () => {
                         },
                     }}
                 />
-                <Input value={stakingRewardAmount} color={"black"} disabled />
+                <Text pl={"10px"} display={"flex"} alignItems={"center"}>
+                    {stakingRewardAmount}
+                </Text>
             </InputGroup>
             <InputGroup backgroundColor={"white"} color={"black"} mt={"20px"}>
                 <InputLeftAddon
@@ -119,7 +130,9 @@ const ClaimingPage: React.FC = () => {
                         },
                     }}
                 />
-                <Input value={availableRewardAmount} color={"black"} disabled />
+                <Text pl={"10px"} display={"flex"} alignItems={"center"}>
+                    {availableRewardAmount}
+                </Text>
             </InputGroup>
             <Flex alignItems={"center"} justifyContent={"center"} mt={"20px"}>
                 <Button width={"200px"} onClick={onClaim}>

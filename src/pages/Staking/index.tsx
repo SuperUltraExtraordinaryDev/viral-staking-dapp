@@ -1,5 +1,11 @@
 // node_modules
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, {
+    useState,
+    useEffect,
+    useContext,
+    useRef,
+    useCallback,
+} from "react";
 import {
     Grid,
     InputGroup,
@@ -8,6 +14,7 @@ import {
     InputRightAddon,
     Button,
     Flex,
+    Text,
     useToast,
 } from "@chakra-ui/react";
 
@@ -30,65 +37,72 @@ const StakingPage: React.FC = () => {
     const unstakeAmountRef =
         useRef() as React.MutableRefObject<HTMLInputElement>;
 
-    useEffect(() => {
+    const getData = useCallback(async () => {
         if (walletContext.account && walletContext.stakingContract) {
-            walletContext.stakingContract.methods
+            walletContext.setLoading();
+            const stakingList = await walletContext.stakingContract.methods
                 .GetStakingListOf(walletContext.account)
-                .call()
-                .then((stakingList: any[]) => {
-                    let tempTotalStakedAmount = 0;
-                    let tempTotalUnstakedAmount = 0;
-                    for (let i = 0; i < stakingList.length; i++) {
-                        if (!stakingList[i].unstaked) {
-                            tempTotalStakedAmount += Number(
-                                walletContext.web3Instance.utils.fromWei(
-                                    stakingList[i].amount,
-                                    "ether"
-                                )
-                            );
-                            tempTotalUnstakedAmount += Number(
-                                walletContext.web3Instance.utils.fromWei(
-                                    stakingList[i].availableUnstakedAmount,
-                                    "ether"
-                                )
-                            );
-                        }
-                    }
-                    setStakingPoolPercent("0");
-                    setTotalStakedAmount(tempTotalStakedAmount.toString());
-                    setTotalUnstakedAmount(tempTotalUnstakedAmount.toString());
-                });
-        }
-    }, [
-        walletContext.account,
-        walletContext.stakingContract,
-        walletContext.web3Instance,
-    ]);
+                .call();
+            walletContext.finishLoading();
 
-    useEffect(() => {
+            let tempTotalStakedAmount = 0;
+            let tempTotalUnstakedAmount = 0;
+            for (let i = 0; i < stakingList.length; i++) {
+                if (!stakingList[i].unstaked) {
+                    tempTotalStakedAmount += Number(
+                        walletContext.web3Instance.utils.fromWei(
+                            stakingList[i].amount,
+                            "ether"
+                        )
+                    );
+                    tempTotalUnstakedAmount += Number(
+                        walletContext.web3Instance.utils.fromWei(
+                            stakingList[i].availableUnstakedAmount,
+                            "ether"
+                        )
+                    );
+                }
+            }
+
+            setStakingPoolPercent("0");
+            setTotalStakedAmount(tempTotalStakedAmount.toString());
+            setTotalUnstakedAmount(tempTotalUnstakedAmount.toString());
+        }
         if (walletContext.account && walletContext.satsTokenContract) {
-            walletContext.satsTokenContract.methods
+            walletContext.setLoading();
+            const satsAllowance = await walletContext.satsTokenContract.methods
                 .allowance(
                     walletContext.account,
                     Contracts.stakingContract.address
                 )
-                .call()
-                .then((satsAllowance: string) => {
-                    setAllowance(satsAllowance);
-                });
-        }
-    }, [walletContext.account, walletContext.satsTokenContract]);
+                .call();
+            walletContext.finishLoading();
 
-    const onStake = () => {
+            setAllowance(satsAllowance);
+        }
+    }, [
+        walletContext.account,
+        walletContext.stakingContract,
+        walletContext.satsTokenContract,
+        walletContext.web3Instance,
+    ]);
+
+    useEffect(() => {
+        getData();
+    }, [getData]);
+
+    const onStake = async () => {
         if (walletContext.account) {
             if (stakeAmountRef.current.value) {
                 const amount = walletContext.web3Instance.utils.toWei(
                     stakeAmountRef.current.value,
                     "ether"
                 );
-                walletContext.stakingContract.methods
+                walletContext.setLoading();
+                await walletContext.stakingContract.methods
                     .stake(amount)
                     .send({ from: walletContext.account });
+                walletContext.finishLoading();
             } else {
                 toast({
                     title: `Please insert correct amount!`,
@@ -107,16 +121,18 @@ const StakingPage: React.FC = () => {
         }
     };
 
-    const onUnstake = () => {
+    const onUnstake = async () => {
         if (walletContext.account) {
             if (unstakeAmountRef.current.value) {
                 const amount = walletContext.web3Instance.utils.toWei(
                     unstakeAmountRef.current.value,
                     "ether"
                 );
-                walletContext.stakingContract.methods
+                walletContext.setLoading();
+                await walletContext.stakingContract.methods
                     .unstake(amount)
                     .send({ from: walletContext.account });
+                walletContext.finishLoading();
             } else {
                 toast({
                     title: `Please insert correct amount!`,
@@ -135,15 +151,17 @@ const StakingPage: React.FC = () => {
         }
     };
 
-    const onApprove = () => {
+    const onApprove = async () => {
         if (walletContext.account && walletContext.satsTokenContract) {
             if (stakeAmountRef.current.value) {
-                walletContext.satsTokenContract.methods
+                walletContext.setLoading();
+                await walletContext.satsTokenContract.methods
                     .approve(
                         Contracts.stakingContract.address,
                         stakeAmountRef.current.value
                     )
                     .send({ from: walletContext.account });
+                walletContext.finishLoading();
             } else {
                 toast({
                     title: `Please insert correct amount!`,
@@ -187,7 +205,9 @@ const StakingPage: React.FC = () => {
                         },
                     }}
                 />
-                <Input value={totalStakedAmount} disabled />
+                <Text pl={"10px"} display={"flex"} alignItems={"center"}>
+                    {totalStakedAmount}
+                </Text>
             </InputGroup>
             <InputGroup backgroundColor={"white"} color={"black"} mt={"20px"}>
                 <InputLeftAddon
@@ -198,7 +218,9 @@ const StakingPage: React.FC = () => {
                         },
                     }}
                 />
-                <Input value={stakingPoolPercent} disabled />
+                <Text pl={"10px"} display={"flex"} alignItems={"center"}>
+                    {stakingPoolPercent}
+                </Text>
             </InputGroup>
             <InputGroup backgroundColor={"white"} color={"black"} mt={"20px"}>
                 <Input
@@ -239,7 +261,9 @@ const StakingPage: React.FC = () => {
                         },
                     }}
                 />
-                <Input value={totalUnstakedAmount} disabled />
+                <Text pl={"10px"} display={"flex"} alignItems={"center"}>
+                    {totalUnstakedAmount}
+                </Text>
             </InputGroup>
             <InputGroup backgroundColor={"white"} color={"black"} mt={"20px"}>
                 <Input

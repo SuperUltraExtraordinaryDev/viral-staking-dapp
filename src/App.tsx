@@ -6,7 +6,7 @@ import { Route, Switch, BrowserRouter } from "react-router-dom";
 import { HomePage, StakingPage, ClaimingPage } from "./pages";
 
 // components
-import LayoutComponent from "./components/Layout";
+import { LayoutComponent } from "./components";
 
 // context
 import { WalletProvider } from "./context/walletContext";

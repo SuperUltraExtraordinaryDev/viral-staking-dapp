@@ -71,7 +71,7 @@ const HeaderComponent: React.FC = () => {
         } catch (error) {
             console.error("error:", error);
         }
-    }, []);
+    }, [walletContext, web3Modal]);
 
     const refreshState = useCallback(() => {
         setAccount("");
@@ -83,11 +83,11 @@ const HeaderComponent: React.FC = () => {
         refreshState();
     }, [web3Modal, refreshState]);
 
-    useEffect(() => {
-        if (web3Modal.cachedProvider) {
-            connectWallet();
-        }
-    }, [web3Modal.cachedProvider, connectWallet]);
+    // useEffect(() => {
+    //     if (web3Modal.cachedProvider) {
+    //         connectWallet();
+    //     }
+    // }, [web3Modal.cachedProvider, connectWallet]);
 
     useEffect(() => {
         if (provider?.on) {

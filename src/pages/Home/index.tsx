@@ -18,22 +18,22 @@ const HomePage: React.FC = () => {
 
     const getSATsBalance = useCallback(async () => {
         if (walletContext.account && walletContext.stakingContract) {
+            console.log("inside getSATsBalance");
+            walletContext.setLoading();
             const balance = await walletContext.stakingContract.methods
                 .GetStakeTokenBalanceOf(walletContext.account)
                 .call();
+            walletContext.finishLoading();
             const originalValue: any = walletContext.web3Instance.utils.fromWei(
                 balance,
                 "ether"
             );
             setSATsBalance(originalValue);
         }
-    }, [
-        walletContext.account,
-        walletContext.stakingContract,
-        walletContext.web3Instance,
-    ]);
+    }, [walletContext.account, walletContext.stakingContract]);
 
     useEffect(() => {
+        console.log("getSATsBalance");
         getSATsBalance();
     }, [getSATsBalance]);
 
