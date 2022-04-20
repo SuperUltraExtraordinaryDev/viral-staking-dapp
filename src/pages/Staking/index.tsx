@@ -22,9 +22,9 @@ const StakingPage: React.FC = () => {
     const toast = useToast();
 
     const [allowance, setAllowance] = useState<string>("0");
-    const [totalStakedAmount, setTotalStakedAmount] = useState<string>("");
-    const [stakingPoolPercent, setStakingPoolPercent] = useState<string>("");
-    const [totalUnstakedAmount, setTotalUnstakedAmount] = useState<string>("");
+    const [totalStakedAmount, setTotalStakedAmount] = useState<string>("0");
+    const [stakingPoolPercent, setStakingPoolPercent] = useState<string>("0");
+    const [totalUnstakedAmount, setTotalUnstakedAmount] = useState<string>("0");
 
     const stakeAmountRef = useRef() as React.MutableRefObject<HTMLInputElement>;
     const unstakeAmountRef =
@@ -74,7 +74,6 @@ const StakingPage: React.FC = () => {
                 )
                 .call()
                 .then((satsAllowance: string) => {
-                    console.log(satsAllowance);
                     setAllowance(satsAllowance);
                 });
         }
@@ -82,16 +81,25 @@ const StakingPage: React.FC = () => {
 
     const onStake = () => {
         if (walletContext.account) {
-            const amount = walletContext.web3Instance.utils.toWei(
-                stakeAmountRef.current.value,
-                "ether"
-            );
-            walletContext.stakingContract.methods
-                .stake(amount)
-                .send({ from: walletContext.account });
+            if (stakeAmountRef.current.value) {
+                const amount = walletContext.web3Instance.utils.toWei(
+                    stakeAmountRef.current.value,
+                    "ether"
+                );
+                walletContext.stakingContract.methods
+                    .stake(amount)
+                    .send({ from: walletContext.account });
+            } else {
+                toast({
+                    title: `Please insert correct amount!`,
+                    status: "error",
+                    isClosable: true,
+                    duration: 3000,
+                });
+            }
         } else {
             toast({
-                title: `Wallet not connected`,
+                title: `Wallet not connected!`,
                 status: "error",
                 isClosable: true,
                 duration: 3000,
@@ -101,13 +109,22 @@ const StakingPage: React.FC = () => {
 
     const onUnstake = () => {
         if (walletContext.account) {
-            const amount = walletContext.web3Instance.utils.toWei(
-                unstakeAmountRef.current.value,
-                "ether"
-            );
-            walletContext.stakingContract.methods
-                .unstake(amount)
-                .send({ from: walletContext.account });
+            if (unstakeAmountRef.current.value) {
+                const amount = walletContext.web3Instance.utils.toWei(
+                    unstakeAmountRef.current.value,
+                    "ether"
+                );
+                walletContext.stakingContract.methods
+                    .unstake(amount)
+                    .send({ from: walletContext.account });
+            } else {
+                toast({
+                    title: `Please insert correct amount!`,
+                    status: "error",
+                    isClosable: true,
+                    duration: 3000,
+                });
+            }
         } else {
             toast({
                 title: `Wallet not connected`,
@@ -119,13 +136,22 @@ const StakingPage: React.FC = () => {
     };
 
     const onApprove = () => {
-        if (walletContext.account) {
-            walletContext.satsTokenContract.methods
-                .approve(
-                    Contracts.stakingContract.address,
-                    stakeAmountRef.current.value
-                )
-                .send({ from: walletContext.account });
+        if (walletContext.account && walletContext.satsTokenContract) {
+            if (stakeAmountRef.current.value) {
+                walletContext.satsTokenContract.methods
+                    .approve(
+                        Contracts.stakingContract.address,
+                        stakeAmountRef.current.value
+                    )
+                    .send({ from: walletContext.account });
+            } else {
+                toast({
+                    title: `Please insert correct amount!`,
+                    status: "error",
+                    isClosable: true,
+                    duration: 3000,
+                });
+            }
         } else {
             toast({
                 title: `Wallet not connected`,
@@ -138,7 +164,7 @@ const StakingPage: React.FC = () => {
 
     return (
         <Grid
-            backgroundColor={"rgb(126, 126, 125)"}
+            backgroundColor={"rgba(100, 100, 100, 0.4);"}
             alignItems={"center"}
             margin-top={"30px"}
             width={"500px"}

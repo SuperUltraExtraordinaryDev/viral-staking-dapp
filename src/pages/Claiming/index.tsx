@@ -37,27 +37,24 @@ const ClaimingPage: React.FC = () => {
                             "ether"
                         );
                     setAvailableRewardAmount(tempAvailableRewardAmount);
+                });
 
-                    walletContext.stakingContract.methods
-                        .GetStakingListOf(walletContext.account)
-                        .call()
-                        .then((stakingList: any[]) => {
-                            let wbtcStakingRewardAmount = 0;
-                            for (let i = 0; i < stakingList.length; i++) {
-                                if (!stakingList[i].withdrawn) {
-                                    wbtcStakingRewardAmount += Number(
-                                        walletContext.web3Instance.utils.fromWei(
-                                            stakingList[i]
-                                                .availableUnclaimedReward,
-                                            "ether"
-                                        )
-                                    );
-                                }
-                            }
-                            setStakingRewardAmount(
-                                wbtcStakingRewardAmount.toString()
+            walletContext.stakingContract.methods
+                .GetStakingListOf(walletContext.account)
+                .call()
+                .then((stakingList: any[]) => {
+                    let wbtcStakingRewardAmount = 0;
+                    for (let i = 0; i < stakingList.length; i++) {
+                        if (!stakingList[i].withdrawn) {
+                            wbtcStakingRewardAmount += Number(
+                                walletContext.web3Instance.utils.fromWei(
+                                    stakingList[i].availableUnclaimedReward,
+                                    "ether"
+                                )
                             );
-                        });
+                        }
+                    }
+                    setStakingRewardAmount(wbtcStakingRewardAmount.toString());
                 });
         }
     }, [
@@ -88,7 +85,7 @@ const ClaimingPage: React.FC = () => {
 
     return (
         <Grid
-            backgroundColor={"rgb(126, 126, 125)"}
+            backgroundColor={"rgba(100, 100, 100, 0.4);"}
             alignItems={"center"}
             margin-top={"30px"}
             width={"500px"}
@@ -122,7 +119,7 @@ const ClaimingPage: React.FC = () => {
                         },
                     }}
                 />
-                <Input value={availableRewardAmount} color={"black"} />
+                <Input value={availableRewardAmount} color={"black"} disabled />
             </InputGroup>
             <Flex alignItems={"center"} justifyContent={"center"} mt={"20px"}>
                 <Button width={"200px"} onClick={onClaim}>

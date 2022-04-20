@@ -1,5 +1,5 @@
 // node_modules
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext, useCallback, useEffect } from "react";
 import { Flex } from "@chakra-ui/react";
 
 // components
@@ -16,25 +16,26 @@ const HomePage: React.FC = () => {
 
     const walletContext = useContext(WalletContext);
 
-    useEffect(() => {
+    const getSATsBalance = useCallback(async () => {
         if (walletContext.account && walletContext.stakingContract) {
-            walletContext.stakingContract.methods
+            const balance = await walletContext.stakingContract.methods
                 .GetStakeTokenBalanceOf(walletContext.account)
-                .call()
-                .then((balance: string) => {
-                    const originalValue: any =
-                        walletContext.web3Instance.utils.fromWei(
-                            balance,
-                            "ether"
-                        );
-                    setSATsBalance(originalValue);
-                });
+                .call();
+            const originalValue: any = walletContext.web3Instance.utils.fromWei(
+                balance,
+                "ether"
+            );
+            setSATsBalance(originalValue);
         }
     }, [
         walletContext.account,
         walletContext.stakingContract,
         walletContext.web3Instance,
     ]);
+
+    useEffect(() => {
+        getSATsBalance();
+    }, [getSATsBalance]);
 
     return (
         <>
@@ -43,7 +44,7 @@ const HomePage: React.FC = () => {
                 alignItems={"center"}
                 justifyContent={"center"}
                 sx={{
-                    "@media only screen and (max-width: 750px)": {
+                    "@media only screen and (max-width: 800px)": {
                         display: "grid",
                     },
                 }}
@@ -62,7 +63,7 @@ const HomePage: React.FC = () => {
                 alignItems={"center"}
                 justifyContent={"center"}
                 sx={{
-                    "@media only screen and (max-width: 750px)": {
+                    "@media only screen and (max-width: 800px)": {
                         display: "grid",
                     },
                 }}
