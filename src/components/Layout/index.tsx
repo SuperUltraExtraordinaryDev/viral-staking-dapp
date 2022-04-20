@@ -1,5 +1,5 @@
 // node_modules
-import React, { useContext } from "react";
+import React from "react";
 import { useLocation } from "react-router-dom";
 import { Grid } from "@chakra-ui/react";
 
@@ -7,10 +7,10 @@ import { Grid } from "@chakra-ui/react";
 import HeaderComponent from "../Header";
 import ControllerComponent from "../Controller";
 import FooterComponent from "../Footer";
-import LoadingComponent from "../Loading";
+// import LoadingComponent from "../Loading";
 
 // context
-import WalletContext from "../../context/walletContext";
+// import LoadingContext from "../../context/loadingContext";
 
 // consts
 import { PATH } from "../../consts";
@@ -21,11 +21,11 @@ interface LayoutProps {
 
 const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
     const location = useLocation();
-    const walletContext = useContext(WalletContext);
+    // const loadingContext = useContext(LoadingContext);
 
     return (
         <>
-            {walletContext.isLoading() && <LoadingComponent />}
+            {/* {loadingContext.isLoading() && <LoadingComponent />} */}
             <HeaderComponent></HeaderComponent>
             <ControllerComponent></ControllerComponent>
             <Grid

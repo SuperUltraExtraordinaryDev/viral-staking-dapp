@@ -20,12 +20,14 @@ import {
 
 // context
 import WalletContext from "../../context/walletContext";
+// import LoadingContext from "../../context/loadingContext";
 
 // config
 import { Contracts } from "../../config";
 
 const StakingPage: React.FC = () => {
     const walletContext = useContext(WalletContext);
+    // const loadingContext = useContext(LoadingContext);
     const toast = useToast();
 
     const [allowance, setAllowance] = useState<string>("0");
@@ -39,11 +41,11 @@ const StakingPage: React.FC = () => {
 
     const getData = useCallback(async () => {
         if (walletContext.account && walletContext.stakingContract) {
-            walletContext.setLoading();
+            // loadingContext.setLoading();
             const stakingList = await walletContext.stakingContract.methods
                 .GetStakingListOf(walletContext.account)
                 .call();
-            walletContext.finishLoading();
+            // loadingContext.finishLoading();
 
             let tempTotalStakedAmount = 0;
             let tempTotalUnstakedAmount = 0;
@@ -69,14 +71,14 @@ const StakingPage: React.FC = () => {
             setTotalUnstakedAmount(tempTotalUnstakedAmount.toString());
         }
         if (walletContext.account && walletContext.satsTokenContract) {
-            walletContext.setLoading();
+            // loadingContext.setLoading();
             const satsAllowance = await walletContext.satsTokenContract.methods
                 .allowance(
                     walletContext.account,
                     Contracts.stakingContract.address
                 )
                 .call();
-            walletContext.finishLoading();
+            // loadingContext.finishLoading();
 
             setAllowance(satsAllowance);
         }
@@ -98,11 +100,11 @@ const StakingPage: React.FC = () => {
                     stakeAmountRef.current.value,
                     "ether"
                 );
-                walletContext.setLoading();
+                // loadingContext.setLoading();
                 await walletContext.stakingContract.methods
                     .stake(amount)
                     .send({ from: walletContext.account });
-                walletContext.finishLoading();
+                // loadingContext.finishLoading();
             } else {
                 toast({
                     title: `Please insert correct amount!`,
@@ -128,11 +130,11 @@ const StakingPage: React.FC = () => {
                     unstakeAmountRef.current.value,
                     "ether"
                 );
-                walletContext.setLoading();
+                // loadingContext.setLoading();
                 await walletContext.stakingContract.methods
                     .unstake(amount)
                     .send({ from: walletContext.account });
-                walletContext.finishLoading();
+                // loadingContext.finishLoading();
             } else {
                 toast({
                     title: `Please insert correct amount!`,
@@ -154,14 +156,14 @@ const StakingPage: React.FC = () => {
     const onApprove = async () => {
         if (walletContext.account && walletContext.satsTokenContract) {
             if (stakeAmountRef.current.value) {
-                walletContext.setLoading();
+                // loadingContext.setLoading();
                 await walletContext.satsTokenContract.methods
                     .approve(
                         Contracts.stakingContract.address,
                         stakeAmountRef.current.value
                     )
                     .send({ from: walletContext.account });
-                walletContext.finishLoading();
+                // loadingContext.finishLoading();
             } else {
                 toast({
                     title: `Please insert correct amount!`,

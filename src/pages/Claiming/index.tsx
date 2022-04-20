@@ -12,9 +12,11 @@ import {
 
 // context
 import WalletContext from "../../context/walletContext";
+// import LoadingContext from "../../context/loadingContext";
 
 const ClaimingPage: React.FC = () => {
     const walletContext = useContext(WalletContext);
+    // const loadingContext = useContext(LoadingContext);
     const toast = useToast();
 
     const [stakingRewardAmount, setStakingRewardAmount] = useState<string>("0");
@@ -27,12 +29,12 @@ const ClaimingPage: React.FC = () => {
             walletContext.web3Instance &&
             walletContext.stakingContract
         ) {
-            walletContext.setLoading();
+            // loadingContext.setLoading();
             const wbtcAvailableRewardAmount =
                 await walletContext.stakingContract.methods
                     .GetMaxUnclaimedAmount(walletContext.account)
                     .call();
-            walletContext.finishLoading();
+            // loadingContext.finishLoading();
 
             const tempAvailableRewardAmount =
                 walletContext.web3Instance.utils.fromWei(
@@ -42,11 +44,11 @@ const ClaimingPage: React.FC = () => {
 
             setAvailableRewardAmount(tempAvailableRewardAmount);
 
-            walletContext.setLoading();
+            // loadingContext.setLoading();
             const stakingList = await walletContext.stakingContract.methods
                 .GetStakingListOf(walletContext.account)
                 .call();
-            walletContext.finishLoading();
+            // loadingContext.finishLoading();
 
             let wbtcStakingRewardAmount = 0;
             for (let i = 0; i < stakingList.length; i++) {

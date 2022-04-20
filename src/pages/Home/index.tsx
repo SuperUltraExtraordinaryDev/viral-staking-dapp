@@ -7,6 +7,7 @@ import { ValueItemBoxComponent } from "../../components";
 
 // context
 import WalletContext from "../../context/walletContext";
+// import LoadingContext from "../../context/loadingContext";
 
 const HomePage: React.FC = () => {
     const [SATsBalance, setSATsBalance] = useState<string>("0");
@@ -15,22 +16,27 @@ const HomePage: React.FC = () => {
     const [burnedTokens] = useState<string>("0");
 
     const walletContext = useContext(WalletContext);
+    // const loadingContext = useContext(LoadingContext);
 
     const getSATsBalance = useCallback(async () => {
         if (walletContext.account && walletContext.stakingContract) {
             console.log("inside getSATsBalance");
-            walletContext.setLoading();
+            // loadingContext.setLoading();
             const balance = await walletContext.stakingContract.methods
                 .GetStakeTokenBalanceOf(walletContext.account)
                 .call();
-            walletContext.finishLoading();
+            // loadingContext.finishLoading();
             const originalValue: any = walletContext.web3Instance.utils.fromWei(
                 balance,
                 "ether"
             );
             setSATsBalance(originalValue);
         }
-    }, [walletContext.account, walletContext.stakingContract]);
+    }, [
+        walletContext.account,
+        walletContext.stakingContract,
+        walletContext.web3Instance,
+    ]);
 
     useEffect(() => {
         console.log("getSATsBalance");
